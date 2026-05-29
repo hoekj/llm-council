@@ -123,7 +123,9 @@ All backend modules use relative imports (e.g., `from .config import ...`) not a
 All ReactMarkdown components must be wrapped in `<div className="markdown-content">` for proper spacing. This class is defined globally in `index.css`.
 
 ### Model Configuration
-Models are hardcoded in `backend/config.py`. Chairman can be same or different from council members. The current default is Gemini as chairman per user preference.
+Models are hardcoded in `backend/config.py`. Chairman can be same or different from council members. The current chairman is Claude Opus 4.8, which also sits on the council. The council prioritizes reasoning quality over cost: GPT-5.5, Gemini 3.1 Pro, Claude Opus 4.8, and Grok 4.3.
+
+The API key is loaded from `.env.local` (preferred) or `.env`. `config.py` loads both via absolute paths anchored to the project root, so `OPENROUTER_API_KEY` resolves regardless of the working directory. Note: a bare `load_dotenv()` only reads `.env`, so `.env.local` must be loaded explicitly.
 
 ## Common Gotchas
 
