@@ -2,10 +2,25 @@
 
 import json
 import os
+import uuid
 from datetime import datetime
 from typing import List, Dict, Any, Optional
 from pathlib import Path
 from .config import DATA_DIR
+
+
+def is_valid_conversation_id(conversation_id: str) -> bool:
+    """Return True only for well-formed UUID strings.
+
+    Conversation ids are generated with uuid.uuid4(), so anything that is not a
+    valid UUID is rejected. This prevents path traversal via a crafted id (e.g.
+    "../../etc/passwd") since a UUID cannot contain path separators or dots.
+    """
+    try:
+        uuid.UUID(str(conversation_id))
+        return True
+    except (ValueError, AttributeError, TypeError):
+        return False
 
 
 def ensure_data_dir():
@@ -14,8 +29,20 @@ def ensure_data_dir():
 
 
 def get_conversation_path(conversation_id: str) -> str:
-    """Get the file path for a conversation."""
-    return os.path.join(DATA_DIR, f"{conversation_id}.json")
+    """Get the file path for a conversation.
+
+    Validates the id and verifies the resolved path stays within DATA_DIR as
+    defense-in-depth against path traversal.
+    """
+    if not is_valid_conversation_id(conversation_id):
+        raise ValueError(f"Invalid conversation id: {conversation_id!r}")
+
+    data_dir = Path(DATA_DIR).resolve()
+    path = (data_dir / f"{conversation_id}.json").resolve()
+    if path.parent != data_dir:
+        raise ValueError(f"Invalid conversation id: {conversation_id!r}")
+
+    return str(path)
 
 
 def create_conversation(conversation_id: str) -> Dict[str, Any]:
@@ -53,8 +80,11 @@ def get_conversation(conversation_id: str) -> Optional[Dict[str, Any]]:
         conversation_id: Unique identifier for the conversation
 
     Returns:
-        Conversation dict or None if not found
+        Conversation dict or None if not found or the id is invalid
     """
+    if not is_valid_conversation_id(conversation_id):
+        return None
+
     path = get_conversation_path(conversation_id)
 
     if not os.path.exists(path):

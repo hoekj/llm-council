@@ -3,6 +3,29 @@
   border-color: #c8e6c8;
 }
 
+.stage3-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.copy-markdown-button {
+  background: #ffffff;
+  color: #2d8a2d;
+  border: 1px solid #c8e6c8;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.copy-markdown-button:hover {
+  background: #eafaea;
+}
+
 .final-response {
   background: #ffffff;
   padding: 20px;

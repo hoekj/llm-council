@@ -196,4 +196,6 @@ async def send_message_stream(conversation_id: str, request: SendMessageRequest)
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8001)
+    # Bind to localhost only: this is an unauthenticated local-dev tool and must
+    # not be reachable from other machines on the network.
+    uvicorn.run(app, host="127.0.0.1", port=8001)
